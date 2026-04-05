@@ -29,6 +29,7 @@ body {
   padding: 1rem;
 }
 
+/* ── MINIMALIST TEXT BUTTON ── */
 #sound-toggle {
   position: absolute;
   top: 1.5rem;
@@ -41,8 +42,8 @@ body {
   color: var(--deep-rose);
   cursor: pointer;
   text-transform: uppercase;
-  font-weight: 300;
-  opacity: 0.4;
+  font-weight: 400;
+  opacity: 0.5;
   transition: opacity 0.3s ease;
   z-index: 9999;
 }
@@ -185,7 +186,7 @@ footer {
 </head>
 <body>
 
-<button id="sound-toggle" onclick="toggleAudio()">Ambience</button>
+<button id="sound-toggle" onclick="toggleAudio()">Music</button>
 
 <div class="container">
   <header>
@@ -211,12 +212,11 @@ footer {
   <footer>FOR LINDSIE WITH ALL MY LOVE</footer>
 </div>
 
-<audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+<audio id="bg-music" loop src="https://cdn.pixabay.com/audio/2022/02/22/audio_d0c6ff1bab.mp3"></audio>
 
 <script>
-// Balanced Pool (40% flirty/sexual, 60% character/LDR)
 const POOL = [
-  // Flirty / Sexual
+  // Flirty / Physical (40%)
   "If I were lying next to you right now, what is the very first thing you’d do?",
   "What is the most attractive thing I've done without realizing it?",
   "What do you think about when you miss me in 'that' way?",
@@ -227,32 +227,32 @@ const POOL = [
   "What is a fantasy you’ve never told anyone else?",
   "What's a specific spot you want me to kiss you next time I see you?",
   "What shirt or hoodie of mine do you wish you were wearing tonight?",
-  "What is your favorite way for me to touch you when we're just relaxing?",
-  "What is something I do that instantly turns you on without me even trying?",
   "What's something you've thought about doing with me but haven't suggested yet?",
   "What's something you want more of when we're together?",
-  
-  // Character / LDR / Someday
+  "When was the exact moment you realized the physical tension between us was real?",
+  "What is your favorite way for me to touch you when we're just relaxing?",
+
+  // Character / LDR / Vulnerability (60%)
   "If your friends had to describe your worst quality, what would they say?",
   "What's something you're secretly proud of but would never brag about?",
   "What's the pettiest thing you've ever done?",
-  "When was the last time you were genuinely wrong and had to admit it?",
-  "What would you do differently if nobody was watching?",
+  "When was the last time you had to admit you were genuinely wrong?",
   "What's a dream you've quietly given up on?",
   "What did you first notice about me that you'd never say unprompted?",
   "What do I do that you find secretly endearing but never mention?",
   "When did you first think 'okay, I actually really like this person'?",
   "What do you think about right before you fall asleep?",
-  "What cheers you up that you'd be embarrassed to admit?",
   "What version of yourself are you still trying to become?",
-  "What do you think is the most misunderstood thing about you?",
   "What was the hardest part about the distance you never fully told me?",
   "What keeps you going when the distance feels impossible?",
   "What's the first 'boring' domestic thing you want to do when the distance is gone?",
   "What do you want us to still be doing when we're really old and creaky?",
+  "What's something you're building right now that's partly for us?",
+  "What would you want me to know if I ever see you at your worst?",
+  "What do you need when you're struggling that you find hard to ask for?",
   "What is somewhere you've been imagining taking me?",
-  "What's the most you've ever grown because of knowing me?",
-  "What's something you hope I never change?"
+  "What's something you're scared to need from me?",
+  "What's something about this relationship that surprised you?"
 ];
 
 let currentRound = 0;
@@ -273,11 +273,11 @@ function toggleAudio() {
   if (audio.paused) { 
     audio.play(); 
     btn.style.opacity = "1";
-    btn.innerText = "Ambience: On";
+    btn.innerText = "Music: On";
   } else { 
     audio.pause(); 
-    btn.style.opacity = "0.4";
-    btn.innerText = "Ambience";
+    btn.style.opacity = "0.5";
+    btn.innerText = "Music";
   }
 }
 
