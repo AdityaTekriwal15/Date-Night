@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Distance Game: Intimate Edition</title>
+<title>The Distance Game</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -30,7 +30,32 @@ body {
   line-height: 1.7;
 }
 
-.container { max-width: 600px; margin: 0 auto; }
+.container { max-width: 600px; margin: 0 auto; position: relative; }
+
+/* ── AMBIENCE PLAYER ── */
+.ambience-controls {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  display: flex;
+  gap: 10px;
+  background: var(--glass);
+  padding: 8px 15px;
+  border-radius: 50px;
+  border: 1px solid rgba(229, 152, 155, 0.2);
+}
+
+.ambience-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.ambience-btn:hover, .ambience-btn.active { opacity: 1; transform: scale(1.1); }
 
 /* ── HEADER ── */
 header {
@@ -44,15 +69,12 @@ header h1 {
   color: var(--deep-rose);
   font-weight: 700;
   margin-bottom: 0.5rem;
-  font-style: italic;
 }
 
 header .subtitle {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--rose);
   font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 /* ── PLAYER NAMES ── */
@@ -65,7 +87,6 @@ header .subtitle {
 
 .name-input-wrap {
   background: var(--glass);
-  backdrop-filter: blur(5px);
   border: 1px solid rgba(229, 152, 155, 0.3);
   border-radius: 12px;
   padding: 0.8rem 1rem;
@@ -115,13 +136,7 @@ header .subtitle {
   border-radius: 24px;
   padding: 2.5rem 2rem;
   box-shadow: var(--shadow);
-  animation: slideUp 0.5s ease-out;
   text-align: center;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .round-info {
@@ -141,11 +156,7 @@ header .subtitle {
 }
 
 /* ── BUTTONS ── */
-.btn-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.btn-group { display: flex; flex-direction: column; gap: 12px; }
 
 button {
   font-family: 'Montserrat', sans-serif;
@@ -158,32 +169,15 @@ button {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  line-height: 1.4;
 }
 
 button:hover {
   border-color: var(--rose);
   background: var(--cream);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(181, 101, 118, 0.1);
 }
 
-button.primary {
-  background: var(--deep-rose);
-  color: white;
-  border: none;
-  margin-top: 1.5rem;
-}
-
-button.primary:hover {
-  background: #a05061;
-}
-
-button.selected {
-  border-color: var(--deep-rose);
-  background: rgba(181, 101, 118, 0.05);
-  font-weight: 600;
-}
+button.primary { background: var(--deep-rose); color: white; border: none; margin-top: 1.5rem; }
+button.selected { border-color: var(--deep-rose); background: rgba(181, 101, 118, 0.05); }
 
 /* ── QUESTION DISPLAY ── */
 .question-box {
@@ -196,32 +190,32 @@ button.selected {
   font-style: italic;
   color: var(--deep-rose);
   line-height: 1.6;
-  border: 1px solid rgba(229, 152, 155, 0.1);
 }
 
-.instruction {
-  font-size: 0.85rem;
-  color: var(--rose);
-  margin-top: 1rem;
-  font-style: italic;
-}
+.instruction { font-size: 0.85rem; color: var(--rose); margin-top: 1rem; }
 
 footer {
   text-align: center;
   margin-top: 4rem;
-  font-size: 0.7rem;
-  color: var(--rose);
-  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--deep-rose);
+  letter-spacing: 0.05em;
 }
-
 </style>
 </head>
 <body>
 
 <div class="container">
+  <div class="ambience-controls">
+    <button class="ambience-btn" onclick="toggleAudio('rain')" title="Rainfall">🌧️</button>
+    <button class="ambience-btn" onclick="toggleAudio('fire')" title="Fireplace">🔥</button>
+    <button class="ambience-btn" onclick="toggleAudio('lofi')" title="Soft Ambient">🌙</button>
+  </div>
+
   <header>
-    <h1>The Distance</h1>
-    <div class="subtitle">A Ritual of Connection</div>
+    <h1>The Distance Game</h1>
+    <div class="subtitle">Closing the gap, one question at a time.</div>
   </header>
 
   <div class="names-row">
@@ -239,27 +233,30 @@ footer {
 
   <div id="game-ui"></div>
 
-  <footer>SOFTNESS &bull; INTIMACY &bull; TRUTH</footer>
+  <footer>FOR LINDSIE WITH ALL MY LOVE</footer>
 </div>
+
+<audio id="audio-rain" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3"></audio> <audio id="audio-fire" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+<audio id="audio-lofi" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
 <script>
 // ── DATA ──
 const ROUNDS = [
-  { title: "Arrival", pairs: ["What was the first thing you noticed about me that you never told me?", "What is the most beautiful thing I’ve said to you recently?"] },
-  { title: "The Tension", pairs: ["What part of my body have you been thinking about the most today?", "If we were in the same room right now, where would your hands be?"] },
-  { title: "Softness", pairs: ["What is a way I can make you feel more safe and seen?", "When do you feel most 'at home' with me?"] },
-  { title: "Heat", pairs: ["What is a fantasy you’ve had about me that felt 'too much' to say?", "Describe a time I looked at you and you felt it in your whole body."] },
-  { title: "The Mind", pairs: ["What is an intellectual trait of mine that turns you on?", "What do you think is the most misunderstood part of your heart?"] },
-  { title: "Physicality", pairs: ["What is your favorite way for me to touch you when we aren't being sexual?", "What is a 'forbidden' or 'new' thing you want to try with me next time we meet?"] },
-  { title: "The Distance", pairs: ["How has being apart from me changed the way you love me?", "What is the hardest part about sleeping without me tonight?"] },
-  { title: "Vulnerability", pairs: ["What is a secret about your body that you’re still learning to love?", "When was the last time I made you feel truly desired?"] },
-  { title: "Desire", pairs: ["If you could have me do exactly one thing to you right now, what would it be?", "Describe the specific way you want me to kiss you when we reunite."] },
-  { title: "The Future", pairs: ["What is one promise you want us to keep to each other's bodies?", "When we finally close the distance, what will be our first morning together look like?"] }
+  { title: "Looking Back", pairs: ["What is a small moment from our last visit that you keep replaying in your head?", "What shirt or hoodie of mine do you wish you were wearing tonight?"] },
+  { title: "The Miles", pairs: ["What is the hardest time of day to be away from me?", "What’s a weird little habit of mine you actually find yourself missing?"] },
+  { title: "Chemistry", pairs: ["If I were lying next to you right now, what is the very first thing you’d do?", "Describe exactly how you want me to kiss you the second we see each other next."] },
+  { title: "Confessions", pairs: ["What’s something you’ve been wanting to try with me but haven't brought up yet?", "What was the exact moment you realized the physical tension between us was real?"] },
+  { title: "The Mind", pairs: ["What is an intellectual trait of mine that turns you on the most?", "What’s a specific thing I do that makes you feel instantly desired?"] },
+  { title: "Body Language", pairs: ["What part of my body have you been thinking about the most today?", "What is your favorite way for me to touch you when we're just relaxing?"] },
+  { title: "Realities", pairs: ["What’s the most boring, everyday thing you wish we could do together tomorrow?", "How has being apart changed the way you think about us?"] },
+  { title: "Intensity", pairs: ["Describe a time I looked at you and you felt it in your whole body.", "What were you genuinely thinking the first time you saw me naked?"] },
+  { title: "The Reunion", pairs: ["What are we doing on our first Sunday morning together after the distance is gone?", "If you could freeze one physical memory of us forever, which one would it be?"] },
+  { title: "The Horizon", pairs: ["What is a promise you want to make to my body tonight?", "What is the one thing you are most looking forward to building with me?"] }
 ];
 
 // ── STATE ──
 let currentRound = 0;
-let phase = 'pick-asker'; // pick-asker, pick-question, answer
+let phase = 'pick-asker';
 let asker = null;
 let selectedQuestionIdx = null;
 
@@ -267,8 +264,20 @@ function getName(id) {
   return document.getElementById(id).value.trim() || (id === 'p1' ? 'Player 1' : 'Player 2');
 }
 
-function saveNames() {
-  if (phase === 'pick-asker') render();
+function saveNames() { if (phase === 'pick-asker') render(); }
+
+// ── AUDIO LOGIC ──
+function toggleAudio(type) {
+  const audios = ['audio-rain', 'audio-fire', 'audio-lofi'];
+  audios.forEach(id => {
+    const el = document.getElementById(id);
+    if(id === `audio-${type}`) {
+      if(el.paused) { el.play(); document.querySelector(`[title="${type.charAt(0).toUpperCase() + type.slice(1)}"]`).classList.add('active'); }
+      else { el.pause(); document.querySelector(`[title="${type.charAt(0).toUpperCase() + type.slice(1)}"]`).classList.remove('active'); }
+    } else {
+      el.pause();
+    }
+  });
 }
 
 function render() {
@@ -279,8 +288,8 @@ function render() {
   if (currentRound >= ROUNDS.length) {
     ui.innerHTML = `
       <div class="card">
-        <div class="card-title">Full Circle</div>
-        <div class="question-box">The distance is just space; this connection is the reality.</div>
+        <div class="card-title">You're everything.</div>
+        <div class="question-box">The distance is only temporary. I love you.</div>
         <button class="primary" onclick="location.reload()">Start Over</button>
       </div>`;
     return;
@@ -291,69 +300,45 @@ function render() {
   if (phase === 'pick-asker') {
     ui.innerHTML = `
       <div class="card">
-        <div class="round-info">Round ${currentRound + 1} of 10 &bull; ${round.title}</div>
-        <div class="card-title">Who is asking this turn?</div>
+        <div class="round-info">Round ${currentRound + 1} &bull; ${round.title}</div>
+        <div class="card-title">Who is asking?</div>
         <div class="btn-group">
           <button onclick="setAsker(1)">${getName('p1')}</button>
           <button onclick="setAsker(2)">${getName('p2')}</button>
         </div>
       </div>`;
   } 
-  
   else if (phase === 'pick-question') {
     ui.innerHTML = `
       <div class="card">
         <div class="round-info">${round.title}</div>
-        <div class="card-title">${asker === 1 ? getName('p1') : getName('p2')}, choose your question:</div>
+        <div class="card-title">${asker === 1 ? getName('p1') : getName('p2')}'s turn</div>
         <div class="btn-group">
           <button class="${selectedQuestionIdx === 0 ? 'selected' : ''}" onclick="selectQ(0)">${round.pairs[0]}</button>
           <button class="${selectedQuestionIdx === 1 ? 'selected' : ''}" onclick="selectQ(1)">${round.pairs[1]}</button>
         </div>
-        <button class="primary" onclick="confirmQ()" ${selectedQuestionIdx === null ? 'disabled' : ''}>Ask this</button>
+        <button class="primary" onclick="confirmQ()" ${selectedQuestionIdx === null ? 'disabled' : ''}>Ask it</button>
       </div>`;
   }
-
   else if (phase === 'answer') {
     ui.innerHTML = `
       <div class="card">
         <div class="round-info">${round.title}</div>
         <div class="question-box">"${round.pairs[selectedQuestionIdx]}"</div>
         <div class="instruction">
-          ${asker === 1 ? getName('p2') : getName('p1')} answers first. <br>
-          Then, ${asker === 1 ? getName('p1') : getName('p2')} answers.
+          ${asker === 1 ? getName('p2') : getName('p1')} answers, then ${asker === 1 ? getName('p1') : getName('p2')}.
         </div>
         <button class="primary" onclick="nextRound()">Next Round</button>
       </div>`;
   }
 }
 
-function setAsker(num) {
-  asker = num;
-  phase = 'pick-question';
-  render();
-}
+function setAsker(num) { asker = num; phase = 'pick-question'; render(); }
+function selectQ(idx) { selectedQuestionIdx = idx; render(); }
+function confirmQ() { phase = 'answer'; render(); }
+function nextRound() { currentRound++; phase = 'pick-asker'; asker = null; selectedQuestionIdx = null; render(); }
 
-function selectQ(idx) {
-  selectedQuestionIdx = idx;
-  render();
-}
-
-function confirmQ() {
-  phase = 'answer';
-  render();
-}
-
-function nextRound() {
-  currentRound++;
-  phase = 'pick-asker';
-  asker = null;
-  selectedQuestionIdx = null;
-  render();
-}
-
-// ── INIT ──
 render();
 </script>
-
 </body>
 </html>
