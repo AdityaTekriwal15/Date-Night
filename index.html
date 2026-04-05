@@ -858,62 +858,57 @@ function resetGame() {
   drawStars();
 })();
 
-// ── AMBIENT MUSIC (Web Audio API — no CDN needed) ──
+// ── MUSIC PLAYER (Web Audio API + remote MP3) ──
 let audioCtx = null;
-let musicNodes = [];
+let musicAudio = null;
+let musicSource = null;
 let musicPlaying = false;
 
+const MUSIC_URL =
+  "https://upload.wikimedia.org/wikipedia/commons/8/82/Nocturne_in_E_flat_major%2C_Op._9_no._2.mp3";
+
 function buildMusic() {
+  if (musicAudio) return;
+
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  musicAudio = new Audio(MUSIC_URL);
+  musicAudio.crossOrigin = "anonymous";
+  musicAudio.loop = true;
+  musicAudio.preload = "auto";
+
   const master = audioCtx.createGain();
-  master.gain.setValueAtTime(0, audioCtx.currentTime);
-  master.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 3);
+  master.gain.value = 0.7;
   master.connect(audioCtx.destination);
 
-  // Soft ambient pad — layered sine waves at harmonic intervals
-  const notes = [130.81, 164.81, 196.00, 246.94, 261.63, 329.63, 392.00];
-  notes.forEach((freq, i) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    const pan = audioCtx.createStereoPanner();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-    // Slow gentle detune drift
-    osc.frequency.linearRampToValueAtTime(freq * 1.002, audioCtx.currentTime + 8 + i * 3);
-    osc.frequency.linearRampToValueAtTime(freq, audioCtx.currentTime + 16 + i * 3);
-
-    gain.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.18 / (i + 1), audioCtx.currentTime + 4 + i * 0.5);
-
-    pan.pan.setValueAtTime((i % 3 - 1) * 0.3, audioCtx.currentTime);
-
-    osc.connect(gain);
-    gain.connect(pan);
-    pan.connect(master);
-    osc.start();
-
-    musicNodes.push({ osc, gain });
-  });
-
-  musicNodes.push({ master });
-  return master;
+  musicSource = audioCtx.createMediaElementSource(musicAudio);
+  musicSource.connect(master);
 }
 
-function toggleMusic() {
-  const btn = document.getElementById('musicBtn');
-  if (!musicPlaying) {
-    if (!audioCtx) buildMusic();
-    else audioCtx.resume();
-    musicPlaying = true;
-    btn.textContent = '♫';
-    btn.style.color = 'var(--rose)';
-  } else {
-    audioCtx.suspend();
-    musicPlaying = false;
-    btn.textContent = '♪';
-    btn.style.color = 'var(--gold)';
+async function toggleMusic() {
+  const btn = document.getElementById("musicBtn");
+  if (!btn) return;
+
+  try {
+    if (!musicPlaying) {
+      buildMusic();
+
+      if (audioCtx.state === "suspended") {
+        await audioCtx.resume();
+      }
+
+      await musicAudio.play();
+      musicPlaying = true;
+      btn.textContent = "⏸";
+      btn.style.color = "var(--rose)";
+    } else {
+      musicAudio.pause();
+      musicPlaying = false;
+      btn.textContent = "♫";
+      btn.style.color = "var(--gold)";
+    }
+  } catch (err) {
+    console.error("Audio playback failed:", err);
   }
 }
 
