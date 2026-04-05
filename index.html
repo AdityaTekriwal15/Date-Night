@@ -4,337 +4,920 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Distance Game</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --rose: #e5989b;
-  --deep-rose: #b56576;
-  --cream: #fffaf5;
-  --dark: #352f36;
-  --glass: rgba(255, 255, 255, 0.7);
+  --bg: #0D0A0E;
+  --surface: #161118;
+  --card: #1C1620;
+  --border: rgba(255,255,255,0.07);
+  --border-accent: rgba(220,160,130,0.3);
+  --rose: #E8A898;
+  --rose-deep: #C4705A;
+  --gold: #D4AF80;
+  --mist: rgba(255,255,255,0.55);
+  --faint: rgba(255,255,255,0.18);
+  --text: #F0EAE4;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  background: var(--cream);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(229, 152, 155, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(223, 180, 140, 0.1) 0px, transparent 50%);
-  color: var(--dark);
-  font-family: 'Montserrat', sans-serif;
+html, body {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
 }
 
-/* ── MINIMALIST TEXT BUTTON ── */
-#sound-toggle {
+/* ── AMBIENT BACKGROUND ── */
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb {
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  background: none;
-  border: none;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.25em;
-  color: var(--deep-rose);
-  cursor: pointer;
-  text-transform: uppercase;
-  font-weight: 400;
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
-  z-index: 9999;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
 }
 
-#sound-toggle:hover { opacity: 1; }
+.orb1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #C4705A, transparent);
+  top: -100px; left: -100px;
+  animation: drift1 18s ease-in-out infinite alternate;
+}
 
-.container { max-width: 550px; margin: auto; width: 100%; position: relative; padding-top: 2rem; }
+.orb2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #7A5080, transparent);
+  bottom: -80px; right: -80px;
+  animation: drift2 22s ease-in-out infinite alternate;
+}
 
-header { text-align: center; margin-bottom: 3rem; }
+.orb3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #D4AF80, transparent);
+  top: 50%; left: 60%;
+  animation: drift3 15s ease-in-out infinite alternate;
+}
+
+@keyframes drift1 { to { transform: translate(60px, 80px); } }
+@keyframes drift2 { to { transform: translate(-40px, -60px); } }
+@keyframes drift3 { to { transform: translate(-80px, 40px); } }
+
+/* ── STARS ── */
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ── */
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 5rem;
+}
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeDown 1s ease both;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
 
 header h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 8vw, 2.8rem);
-  color: var(--deep-rose);
-  font-weight: 700;
-  margin-bottom: 0.4rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.8rem, 8vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 0.75rem;
 }
 
-header .subtitle {
-  font-size: 0.8rem;
+header h1 em {
+  font-style: italic;
   color: var(--rose);
-  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--mist);
   letter-spacing: 0.05em;
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
 }
 
-.names-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 2rem;
+.dedication {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gold);
+  opacity: 0.7;
 }
 
-.name-input-wrap {
-  background: var(--glass);
-  border: 1px solid rgba(229, 152, 155, 0.15);
-  border-radius: 8px;
-  padding: 0.6rem 1rem;
-}
-
-.name-input-wrap label {
-  display: block;
-  font-size: 0.55rem;
-  font-weight: 700;
-  color: var(--deep-rose);
-  text-transform: uppercase;
-  margin-bottom: 2px;
-}
-
-.name-input-wrap input {
-  border: none;
-  background: transparent;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
-  color: var(--dark);
-  width: 100%;
-  outline: none;
-}
-
-.progress-bar {
-  height: 1px;
-  background: rgba(229, 152, 155, 0.15);
+/* ── NAMES ── */
+.names-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   margin-bottom: 2.5rem;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.name-tag {
+  background: var(--card);
+  border: 1px solid var(--border-accent);
+  border-radius: 100px;
+  padding: 0.5rem 1.25rem;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--rose);
+}
+
+.name-sep {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  color: var(--gold);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 8px;
+}
+
+.progress-track {
+  height: 1px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: visible;
+  position: relative;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--deep-rose);
-  width: 0%;
-  transition: width 0.8s ease;
+  background: linear-gradient(90deg, var(--rose-deep), var(--gold));
+  border-radius: 1px;
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  position: relative;
 }
 
+.progress-dot {
+  position: absolute;
+  right: -3px;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* ── CARD ── */
 .card {
-  background: white;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 3rem 2rem;
-  box-shadow: 0 15px 40px rgba(181, 101, 118, 0.08);
-  text-align: center;
-  min-height: 380px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 2rem;
+  margin-bottom: 1rem;
+  animation: cardIn 0.45s cubic-bezier(.34,1.2,.64,1) both;
+  position: relative;
+  overflow: hidden;
 }
 
-.round-info {
-  font-size: 0.65rem;
-  color: var(--rose);
-  font-weight: 600;
-  text-transform: uppercase;
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── PILL ── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
   letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 1.25rem;
+  border: 1px solid;
+}
+
+.pill-warm   { border-color: rgba(212,175,128,0.3); color: var(--gold); background: rgba(212,175,128,0.06); }
+.pill-us     { border-color: rgba(232,168,152,0.3); color: var(--rose); background: rgba(232,168,152,0.06); }
+.pill-flirty { border-color: rgba(196,112,90,0.4);  color: #E88C78;    background: rgba(196,112,90,0.08); }
+.pill-reunion{ border-color: rgba(150,180,200,0.3); color: #90B4C8;    background: rgba(150,180,200,0.06); }
+
+/* ── WHOSE TURN ── */
+.whose-turn {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--faint);
   margin-bottom: 1.5rem;
 }
 
-.card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  color: var(--dark);
-  margin-bottom: 2rem;
+.whose-turn span {
+  color: var(--gold);
+  font-weight: 500;
 }
 
-.btn-group { display: flex; flex-direction: column; gap: 10px; }
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
 
-button.game-btn {
-  font-family: 'Montserrat', sans-serif;
-  padding: 1.1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(229, 152, 155, 0.1);
-  background: #fff;
-  color: var(--dark);
-  font-size: 0.85rem;
+/* ── QUESTION CHOICE ── */
+.choose-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 1rem;
+}
+
+.q-choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+
+.q-choice {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--mist);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.q-choice:hover {
+  border-color: var(--border-accent);
+  background: rgba(232,168,152,0.05);
+  color: var(--text);
+  transform: translateX(4px);
+}
+
+.q-choice.selected {
+  border-color: var(--rose);
+  background: rgba(232,168,152,0.08);
+  color: var(--text);
+}
+
+/* ── REVEALED QUESTION ── */
+.question-reveal {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(232,168,152,0.05);
+  border: 1px solid var(--border-accent);
+  border-radius: 14px;
+  text-align: center;
+}
+
+/* ── ANSWERER TAG ── */
+.answerer-tag {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 1.5rem;
+}
+
+.answerer-tag .aname {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  display: block;
+  margin-top: 4px;
+  color: var(--gold);
+}
+
+/* ── BUTTONS ── */
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 1.5rem; }
+
+button {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 11px 24px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--mist);
   cursor: pointer;
   transition: all 0.2s;
 }
 
-button.game-btn:hover { background: var(--cream); border-color: var(--rose); }
-
-button.primary { background: var(--deep-rose); color: white; border: none; margin-top: 1.5rem; font-weight: 500; }
-button.primary:disabled { opacity: 0.2; }
-button.selected { border-color: var(--deep-rose); background: rgba(181, 101, 118, 0.03); font-weight: 600; }
-
-.question-box {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
-  font-style: italic;
-  color: var(--deep-rose);
-  line-height: 1.6;
-  margin-bottom: 2rem;
+button:hover {
+  border-color: var(--border-accent);
+  color: var(--text);
+  transform: translateY(-2px);
 }
 
-.instruction { font-size: 0.75rem; color: var(--rose); margin-top: 1rem; }
+button:active { transform: scale(0.97); }
 
+.btn-primary {
+  border-color: var(--rose-deep);
+  background: rgba(196,112,90,0.12);
+  color: var(--rose);
+}
+
+.btn-primary:hover {
+  background: rgba(196,112,90,0.2);
+  border-color: var(--rose);
+  color: var(--text);
+}
+
+/* ── PLAYER SELECT ── */
+.player-select {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.player-btn {
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-family: 'Jost', sans-serif;
+}
+
+.player-btn .pb-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 4px;
+}
+
+.player-btn .pb-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--mist);
+}
+
+.player-btn:hover, .player-btn.active {
+  border-color: var(--border-accent);
+  background: rgba(232,168,152,0.06);
+}
+
+.player-btn.active .pb-name { color: var(--rose); }
+.player-btn.active .pb-label { color: var(--gold); }
+
+/* ── END SCREEN ── */
+.end-wrap {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.end-glyph {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  display: block;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.end-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.end-title em { font-style: italic; color: var(--rose); }
+
+.end-msg {
+  font-size: 14px;
+  color: var(--mist);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  max-width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── MUSIC BUTTON ── */
+.music-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border-accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: all 0.2s;
+  font-size: 18px;
+  color: var(--gold);
+  padding: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: inherit;
+}
+
+.music-btn:hover { transform: scale(1.1); border-color: var(--gold); }
+
+/* ── FOOTER ── */
 footer {
   text-align: center;
   margin-top: 4rem;
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--deep-rose);
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+footer em {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: var(--rose);
+  opacity: 0.7;
+  font-size: 13px;
 }
 </style>
 </head>
 <body>
 
-<button id="sound-toggle" onclick="toggleAudio()">Music</button>
+<div class="ambient">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
 
-<div class="container">
+<canvas class="stars" id="stars"></canvas>
+
+<!-- Music (ambient lo-fi via a gentle tone oscillator — no external CDN needed) -->
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Toggle music">♪</button>
+
+<div class="wrap">
   <header>
-    <h1>The Distance Game</h1>
-    <div class="subtitle">Closing the gap, one question at a time.</div>
+    <div class="eyebrow">✦ A game for two ✦</div>
+    <h1>The <em>Distance</em> Game</h1>
+    <p class="subtitle">Closing the gap, one question at a time</p>
+    <p class="dedication">dedicated to my love, Lindsie ♡</p>
   </header>
 
-  <div class="names-row">
-    <div class="name-input-wrap">
-      <label>Player One</label>
-      <input id="p1" type="text" placeholder="Babe" oninput="saveNames()">
+  <div class="names-strip">
+    <div class="name-tag">Aditya</div>
+    <div class="name-sep">&</div>
+    <div class="name-tag">Lindsie</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">Round 1 of 10</span>
+      <span id="prog-pct">0%</span>
     </div>
-    <div class="name-input-wrap">
-      <label>Player Two</label>
-      <input id="p2" type="text" placeholder="Lindsie" oninput="saveNames()">
+    <div class="progress-track">
+      <div class="progress-fill" id="prog" style="width:0%">
+        <div class="progress-dot"></div>
+      </div>
     </div>
   </div>
 
-  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <div id="main"></div>
 
-  <div id="game-ui"></div>
-
-  <footer>FOR LINDSIE WITH ALL MY LOVE</footer>
+  <footer>
+    ✦ &nbsp; made with love for <em>Aditya & Lindsie</em> &nbsp; ✦<br>
+    <span style="font-size:10px;opacity:0.5;letter-spacing:0.05em">across every mile, still yours</span>
+  </footer>
 </div>
 
-<audio id="bg-music" loop src="https://cdn.pixabay.com/audio/2021/09/06/audio_8c1b3e0e5f.mp3"></audio>
-
 <script>
-const POOL = [
-  // Flirty / Physical (40%)
-  "If I were lying next to you right now, what is the very first thing you’d do?",
-  "What is the most attractive thing I've done without realizing it?",
-  "What do you think about when you miss me in 'that' way?",
-  "Describe exactly how you want me to kiss you the second we see each other next.",
-  "What part of my body have you been thinking about the most today?",
-  "What were you genuinely thinking the first time you saw me naked?",
-  "What’s something you want me to do the next time I see you?",
-  "What is a fantasy you’ve never told anyone else?",
-  "What's a specific spot you want me to kiss you next time I see you?",
-  "What shirt or hoodie of mine do you wish you were wearing tonight?",
-  "What's something you've thought about doing with me but haven't suggested yet?",
-  "What's something you want more of when we're together?",
-  "When was the exact moment you realized the physical tension between us was real?",
-  "What is your favorite way for me to touch you when we're just relaxing?",
+// ── ROUNDS DATA ──
+// Each round: category, pill, two question pairs, and who answers
+// answerer: 'Aditya' | 'Lindsie' | 'choose' (host picks at runtime)
 
-  // Character / LDR / Vulnerability (60%)
-  "If your friends had to describe your worst quality, what would they say?",
-  "What's something you're secretly proud of but would never brag about?",
-  "What's the pettiest thing you've ever done?",
-  "When was the last time you had to admit you were genuinely wrong?",
-  "What's a dream you've quietly given up on?",
-  "What did you first notice about me that you'd never say unprompted?",
-  "What do I do that you find secretly endearing but never mention?",
-  "When did you first think 'okay, I actually really like this person'?",
-  "What do you think about right before you fall asleep?",
-  "What version of yourself are you still trying to become?",
-  "What was the hardest part about the distance you never fully told me?",
-  "What keeps you going when the distance feels impossible?",
-  "What's the first 'boring' domestic thing you want to do when the distance is gone?",
-  "What do you want us to still be doing when we're really old and creaky?",
-  "What's something you're building right now that's partly for us?",
-  "What would you want me to know if I ever see you at your worst?",
-  "What do you need when you're struggling that you find hard to ask for?",
-  "What is somewhere you've been imagining taking me?",
-  "What's something you're scared to need from me?",
-  "What's something about this relationship that surprised you?"
+const ROUNDS = [
+  {
+    cat: 'warm', pill: 'pill-warm', pillLabel: '✦ Warm Up',
+    title: 'Let\'s begin',
+    answerer: 'choose',
+    pairs: [
+      "What's the first thing that comes to mind when you think of me right now?",
+      "Describe me in three words — but make them surprising."
+    ]
+  },
+  {
+    cat: 'us', pill: 'pill-us', pillLabel: '♡ Us',
+    title: 'About us',
+    answerer: 'choose',
+    pairs: [
+      "What's your favourite memory of us so far?",
+      "What's something small I do that you secretly love?"
+    ]
+  },
+  {
+    cat: 'flirty', pill: 'pill-flirty', pillLabel: '✧ Flirty',
+    title: 'Getting warmer',
+    answerer: 'choose',
+    pairs: [
+      "What's the most attractive thing I've done without realising it?",
+      "What outfit or look of mine lives rent-free in your head?"
+    ]
+  },
+  {
+    cat: 'reunion', pill: 'pill-reunion', pillLabel: '✈ Reunion',
+    title: 'When we meet',
+    answerer: 'choose',
+    pairs: [
+      "What's the very first thing you want to do when we're finally in the same room?",
+      "What's a simple everyday thing you're most excited to do together in person?"
+    ]
+  },
+  {
+    cat: 'warm', pill: 'pill-warm', pillLabel: '✦ Playful',
+    title: 'A little silly',
+    answerer: 'choose',
+    pairs: [
+      "If you could teleport to me right now, where would we go for the next two hours?",
+      "What would our perfect lazy day together look like, hour by hour?"
+    ]
+  },
+  {
+    cat: 'flirty', pill: 'pill-flirty', pillLabel: '✧ Flirtier',
+    title: 'Turn it up',
+    answerer: 'choose',
+    pairs: [
+      "What's something you want me to do the next time we're together — be specific.",
+      "What do you think about when you miss me that way?"
+    ]
+  },
+  {
+    cat: 'us', pill: 'pill-us', pillLabel: '♡ Deep Us',
+    title: 'What we have',
+    answerer: 'choose',
+    pairs: [
+      "What's something about us that surprised you in the best way?",
+      "When did you first think 'okay, this one is actually special'?"
+    ]
+  },
+  {
+    cat: 'reunion', pill: 'pill-reunion', pillLabel: '✈ Next Time',
+    title: 'Planning ahead',
+    answerer: 'choose',
+    pairs: [
+      "Describe the first morning we wake up together with no goodbye flight to catch.",
+      "What's one place you want to take me the next time we're in the same city?"
+    ]
+  },
+  {
+    cat: 'flirty', pill: 'pill-flirty', pillLabel: '✧ Spicy',
+    title: 'No holding back',
+    answerer: 'choose',
+    pairs: [
+      "What's something you've thought about doing with me but haven't said out loud yet?",
+      "What's a fantasy you'd only ever whisper?"
+    ]
+  },
+  {
+    cat: 'warm', pill: 'pill-warm', pillLabel: '✦ Final Round',
+    title: 'Before we say goodnight',
+    answerer: 'choose',
+    pairs: [
+      "Say the thing you always almost say but stop yourself from saying.",
+      "What do you want the other person to know right now, in this moment?"
+    ]
+  }
 ];
 
-let currentRound = 0;
-const totalRounds = 10;
-let phase = 'pick-asker';
-let asker = null;
-let currentChoices = [];
-let selectedQuestionIdx = null;
+// ── STATE ──
+let ri = 0;
+let phase = 'pick-player'; // 'pick-player' | 'pick-question' | 'answer'
+let currentPlayer = null;
+let selectedQ = null;
 
-const shuffledPool = [...POOL].sort(() => Math.random() - 0.5);
+function n1() { return 'Aditya'; }
+function n2() { return 'Lindsie'; }
 
-function getName(id) { return document.getElementById(id).value.trim() || (id === 'p1' ? 'Babe' : 'Lindsie'); }
-function saveNames() { if (phase === 'pick-asker') render(); }
-
-function toggleAudio() {
-  const audio = document.getElementById('bg-music');
-  const btn = document.getElementById('sound-toggle');
-
-  if (audio.paused) {
-    audio.volume = 0.4; // softer by default
-    audio.play();
-    btn.style.opacity = "1";
-    btn.innerText = "Music: On";
-  } else {
-    audio.pause();
-    btn.style.opacity = "0.5";
-    btn.innerText = "Music";
-  }
+function updateProgress() {
+  const pct = Math.round((ri / ROUNDS.length) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = ri < ROUNDS.length
+    ? `Round ${ri + 1} of ${ROUNDS.length}`
+    : 'Complete ✦';
+  document.getElementById('prog-pct').textContent = pct + '%';
 }
 
 function render() {
-  const ui = document.getElementById('game-ui');
-  const progress = document.getElementById('progress');
-  progress.style.width = `${(currentRound / totalRounds) * 100}%`;
+  updateProgress();
+  const main = document.getElementById('main');
 
-  if (currentRound >= totalRounds) {
-    ui.innerHTML = `<div class="card"><div class="card-title">You're everything.</div><div class="question-box">Distance is just a test of how far love can travel. I love you, Lindsie.</div><button class="game-btn primary" onclick="location.reload()">Start Again</button></div>`;
+  if (ri >= ROUNDS.length) {
+    renderEnd(main);
     return;
   }
 
-  if (phase === 'pick-asker') {
-    ui.innerHTML = `
+  const r = ROUNDS[ri];
+
+  if (phase === 'pick-player') {
+    main.innerHTML = `
       <div class="card">
-        <div class="round-info">Round ${currentRound + 1}</div>
-        <div class="card-title">Who is asking?</div>
-        <div class="btn-group">
-          <button class="game-btn" onclick="setAsker(1)">${getName('p1')}</button>
-          <button class="game-btn" onclick="setAsker(2)">${getName('p2')}</button>
+        <span class="pill ${r.pill}">${r.pillLabel}</span>
+        <div class="whose-turn">Round ${ri + 1} — who's answering?</div>
+        <div class="round-title" style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;font-style:italic;margin-bottom:1.5rem;color:var(--mist)">${r.title}</div>
+        <hr class="divider">
+        <div class="choose-label">Select who answers this round</div>
+        <div class="player-select">
+          <button class="player-btn" id="pb1" onclick="selectPlayer('Aditya')">
+            <div class="pb-label">Player</div>
+            <div class="pb-name">Aditya</div>
+          </button>
+          <button class="player-btn" id="pb2" onclick="selectPlayer('Lindsie')">
+            <div class="pb-label">Player</div>
+            <div class="pb-name">Lindsie</div>
+          </button>
         </div>
+        <div id="player-confirm"></div>
       </div>`;
+
   } else if (phase === 'pick-question') {
-    ui.innerHTML = `
+    main.innerHTML = `
       <div class="card">
-        <div class="round-info">Round ${currentRound + 1}</div>
-        <div class="card-title">${asker === 1 ? getName('p1') : getName('p2')}, choose:</div>
-        <div class="btn-group">
-          <button class="game-btn ${selectedQuestionIdx === 0 ? 'selected' : ''}" onclick="selectQ(0)">${currentChoices[0]}</button>
-          <button class="game-btn ${selectedQuestionIdx === 1 ? 'selected' : ''}" onclick="selectQ(1)">${currentChoices[1]}</button>
+        <span class="pill ${r.pill}">${r.pillLabel}</span>
+        <div class="whose-turn">Answering this round: <span>${currentPlayer}</span></div>
+        <hr class="divider">
+        <div class="choose-label">Pick a question</div>
+        <div class="q-choices">
+          <button class="q-choice" id="qc0" onclick="selectQ(0, this)">${r.pairs[0]}</button>
+          <button class="q-choice" id="qc1" onclick="selectQ(1, this)">${r.pairs[1]}</button>
         </div>
-        <button class="game-btn primary" onclick="confirmQ()" ${selectedQuestionIdx === null ? 'disabled' : ''}>Ask it</button>
+        <div id="q-confirm"></div>
       </div>`;
+
   } else if (phase === 'answer') {
-    ui.innerHTML = `
+    const q = r.pairs[selectedQ];
+    main.innerHTML = `
       <div class="card">
-        <div class="round-info">Round ${currentRound + 1}</div>
-        <div class="question-box">"${currentChoices[selectedQuestionIdx]}"</div>
-        <div class="instruction">${asker === 1 ? getName('p2') : getName('p1')} answers first, then ${asker === 1 ? getName('p1') : getName('p2')}.</div>
-        <button class="game-btn primary" onclick="nextRound()">Next Round</button>
+        <span class="pill ${r.pill}">${r.pillLabel}</span>
+        <div class="question-reveal">${q}</div>
+        <div class="answerer-tag">
+          <span>answering</span>
+          <span class="aname">${currentPlayer}</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="nextRound()">Next round →</button>
+        </div>
       </div>`;
   }
 }
 
-function setAsker(num) {
-  asker = num;
-  currentChoices = shuffledPool.slice(currentRound * 2, (currentRound * 2) + 2);
+function selectPlayer(name) {
+  currentPlayer = name;
+  document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name === 'Aditya' ? 'pb1' : 'pb2').classList.add('active');
+  document.getElementById('player-confirm').innerHTML = `
+    <div class="btn-row">
+      <button class="btn-primary" onclick="goPickQuestion()">${name} answers — choose a question →</button>
+    </div>`;
+}
+
+function goPickQuestion() {
   phase = 'pick-question';
+  selectedQ = null;
   render();
 }
-function selectQ(idx) { selectedQuestionIdx = idx; render(); }
-function confirmQ() { phase = 'answer'; render(); }
-function nextRound() { currentRound++; phase = 'pick-asker'; asker = null; selectedQuestionIdx = null; render(); }
 
+function selectQ(idx, el) {
+  selectedQ = idx;
+  document.querySelectorAll('.q-choice').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('q-confirm').innerHTML = `
+    <div class="btn-row">
+      <button class="btn-primary" onclick="goAnswer()">Ask this one ✦</button>
+    </div>`;
+}
+
+function goAnswer() {
+  if (selectedQ === null) return;
+  phase = 'answer';
+  render();
+}
+
+function nextRound() {
+  ri++;
+  phase = 'pick-player';
+  currentPlayer = null;
+  selectedQ = null;
+  render();
+}
+
+function renderEnd(main) {
+  main.innerHTML = `
+    <div class="card">
+      <div class="end-wrap">
+        <span class="end-glyph">♡</span>
+        <div class="end-title">That's a wrap, <em>love</em></div>
+        <p class="end-msg">
+          Ten rounds. Ten little windows into each other.<br>
+          The distance hasn't closed — but you both got a little closer tonight.
+        </p>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="resetGame()">Play again ✦</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function resetGame() {
+  ri = 0; phase = 'pick-player';
+  currentPlayer = null; selectedQ = null;
+  render();
+}
+
+// ── STARS ──
+(function() {
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < 120; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2,
+        a: Math.random(),
+        speed: 0.002 + Math.random() * 0.004
+      });
+    }
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.a += s.speed;
+      const alpha = 0.1 + 0.35 * Math.abs(Math.sin(s.a));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,245,220,${alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+
+  window.addEventListener('resize', () => { resize(); initStars(); });
+  resize();
+  initStars();
+  drawStars();
+})();
+
+// ── AMBIENT MUSIC (Web Audio API — no CDN needed) ──
+let audioCtx = null;
+let musicNodes = [];
+let musicPlaying = false;
+
+function buildMusic() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const master = audioCtx.createGain();
+  master.gain.setValueAtTime(0, audioCtx.currentTime);
+  master.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 3);
+  master.connect(audioCtx.destination);
+
+  // Soft ambient pad — layered sine waves at harmonic intervals
+  const notes = [130.81, 164.81, 196.00, 246.94, 261.63, 329.63, 392.00];
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const pan = audioCtx.createStereoPanner();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+    // Slow gentle detune drift
+    osc.frequency.linearRampToValueAtTime(freq * 1.002, audioCtx.currentTime + 8 + i * 3);
+    osc.frequency.linearRampToValueAtTime(freq, audioCtx.currentTime + 16 + i * 3);
+
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.18 / (i + 1), audioCtx.currentTime + 4 + i * 0.5);
+
+    pan.pan.setValueAtTime((i % 3 - 1) * 0.3, audioCtx.currentTime);
+
+    osc.connect(gain);
+    gain.connect(pan);
+    pan.connect(master);
+    osc.start();
+
+    musicNodes.push({ osc, gain });
+  });
+
+  musicNodes.push({ master });
+  return master;
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('musicBtn');
+  if (!musicPlaying) {
+    if (!audioCtx) buildMusic();
+    else audioCtx.resume();
+    musicPlaying = true;
+    btn.textContent = '♫';
+    btn.style.color = 'var(--rose)';
+  } else {
+    audioCtx.suspend();
+    musicPlaying = false;
+    btn.textContent = '♪';
+    btn.style.color = 'var(--gold)';
+  }
+}
+
+// ── INIT ──
 render();
 </script>
 </body>
