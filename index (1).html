@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I'm Sorry 💕</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose:      #e8536a;
+      --rose-light:#f7a8b5;
+      --rose-pale: #fde8ec;
+      --plum:      #6b2d4e;
+      --ivory:     #fff8f9;
+      --text:      #3d1a28;
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--ivory);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Hearts canvas ── */
+    #hearts-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Pages ── */
+    .page {
+      display: none;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 60px 20px 80px;
+      text-align: center;
+    }
+    .page.active { display: block; }
+
+    /* ── Sorry page ── */
+    .hero-script {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      color: var(--rose);
+      line-height: 1.1;
+      margin-bottom: 16px;
+      animation: fadeDown 0.9s ease both;
+    }
+
+    .sub-tag {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rose-light);
+      margin-bottom: 48px;
+      animation: fadeDown 0.9s 0.15s ease both;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      max-width: 860px;
+      margin: 0 auto 56px;
+      text-align: left;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+
+    .card {
+      background: #fff;
+      border: 1.5px solid #f5d0d8;
+      border-radius: 18px;
+      padding: 28px 26px;
+      box-shadow: 0 4px 20px rgba(232,83,106,0.08);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(232,83,106,0.14);
+    }
+
+    .card-icon { font-size: 2rem; margin-bottom: 12px; display: block; }
+
+    .card h3 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5rem;
+      color: var(--plum);
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 0.97rem;
+      line-height: 1.7;
+      color: #6b4454;
+      font-weight: 300;
+    }
+
+    .closing-letter {
+      max-width: 600px;
+      margin: 0 auto 60px;
+      background: #fff;
+      border: 1.5px solid #f5d0d8;
+      border-radius: 20px;
+      padding: 38px 40px;
+      text-align: left;
+      box-shadow: 0 4px 24px rgba(232,83,106,0.09);
+      animation: fadeUp 1s 0.5s ease both;
+    }
+
+    .closing-letter p {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: #4d2535;
+      font-weight: 300;
+    }
+
+    .closing-letter .sign {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.8rem;
+      color: var(--rose);
+      margin-top: 18px;
+      display: block;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      max-width: 400px;
+      margin: 0 auto 40px;
+      color: var(--rose-light);
+      font-size: 1.2rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rose-light), transparent);
+    }
+
+    /* ── Accept section ── */
+    .accept-section { animation: fadeUp 1s 0.7s ease both; }
+
+    .accept-section h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: var(--plum);
+      margin-bottom: 30px;
+    }
+
+    .btn-group {
+      display: inline-flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+
+    .btn {
+      padding: 15px 44px;
+      border-radius: 50px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, var(--rose), #c73b55);
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(232,83,106,0.35);
+    }
+    .btn-yes:hover {
+      transform: scale(1.07);
+      box-shadow: 0 10px 32px rgba(232,83,106,0.45);
+    }
+
+    .btn-no {
+      background: #fff;
+      color: var(--rose);
+      border: 2px solid var(--rose-light);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      position: absolute; /* will be repositioned by JS */
+    }
+
+    /* ── Happy page ── */
+    #happy-page {
+      background: linear-gradient(160deg, #ffe0e8 0%, #fff0f4 60%, #fff8f9 100%);
+    }
+
+    .confetti-burst {
+      font-size: clamp(3rem, 12vw, 7rem);
+      animation: pop 0.7s cubic-bezier(0.22,1.6,0.36,1) both;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    #happy-page .hero-script {
+      color: var(--plum);
+      animation: pop 0.8s 0.1s cubic-bezier(0.22,1.6,0.36,1) both;
+    }
+
+    .happy-body {
+      max-width: 540px;
+      margin: 28px auto 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #5a2a3a;
+      font-weight: 300;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .happy-body .sign {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+      color: var(--rose);
+      margin-top: 20px;
+      display: block;
+    }
+
+    .sparkle-row {
+      font-size: 2rem;
+      margin: 32px 0;
+      animation: fadeUp 0.8s 0.5s ease both;
+      letter-spacing: 0.3em;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 500px) {
+      .closing-letter { padding: 26px 22px; }
+      .btn { padding: 13px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="hearts-canvas"></canvas>
+
+<!-- ═══════════════ SORRY PAGE ═══════════════ -->
+<div id="sorry-page" class="page active">
+
+  <p class="sub-tag">A message from the bottom of my heart</p>
+  <h1 class="hero-script">I'm so sorry.</h1>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">💔</span>
+      <h3>I was wrong</h3>
+      <p>I know what I did hurt you, and there is no excuse for that. You deserved better from me, and I'm truly sorry for letting you down.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🫂</span>
+      <h3>I miss you</h3>
+      <p>Every moment without your smile feels like a grey day. I miss laughing with you, talking with you, and just being near you.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🌸</span>
+      <h3>You matter to me</h3>
+      <p>You are one of the most important people in my world. Your feelings matter deeply to me, and I never want to be the reason you feel sad.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🌟</span>
+      <h3>I want to do better</h3>
+      <p>This isn't just words — I'm committed to being the person you deserve. I want to grow, listen more, and love you the right way.</p>
+    </div>
+  </div>
+
+  <div class="closing-letter">
+    <p>
+      Hey you,<br><br>
+      I've been sitting here thinking about how to say this, and honestly there aren't enough words. I'm sorry. Not just because things are awkward between us, but because <em>you</em> deserve an apology — a real one.
+    </p>
+    <p style="margin-top: 14px;">
+      You are kind, thoughtful, and you give so much of yourself. I should have been more careful with that. I should have been more careful with <em>you</em>.
+    </p>
+    <p style="margin-top: 14px;">
+      I don't want to lose what we have. You mean the world to me, and I'll spend as long as it takes making this right — if you'll let me.
+    </p>
+    <span class="sign">All my love 💕</span>
+  </div>
+
+  <div class="divider">💗</div>
+
+  <div class="accept-section">
+    <h2>Do you accept my apology?</h2>
+    <div class="btn-group" id="btn-group">
+      <button class="btn btn-yes" onclick="goHappy()">Yes, I forgive you 💕</button>
+      <button class="btn btn-no" id="btn-no">No</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ HAPPY PAGE ═══════════════ -->
+<div id="happy-page" class="page">
+  <span class="confetti-burst">🥳</span>
+  <h1 class="hero-script">We're okay again!</h1>
+  <div class="sparkle-row">🎉 💕 ✨ 🌸 💫</div>
+  <div class="happy-body">
+    <p>
+      You have no idea how happy this makes me! 🥹<br><br>
+      Thank you for giving me another chance — I promise I won't waste it. 
+      You mean everything to me, and I am going to show you every single day just how much I cherish you.
+    </p>
+    <p style="margin-top: 14px;">
+      Now let's go make some new, beautiful memories together. 🌸
+    </p>
+    <span class="sign">Forever yours 💕</span>
+  </div>
+</div>
+
+<script>
+  /* ── Floating hearts ── */
+  const canvas = document.getElementById('hearts-canvas');
+  const ctx = canvas.getContext('2d');
+  let hearts = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function spawnHeart() {
+    hearts.push({
+      x: Math.random() * canvas.width,
+      y: canvas.height + 20,
+      size: 10 + Math.random() * 18,
+      speed: 0.6 + Math.random() * 1.2,
+      drift: (Math.random() - 0.5) * 0.6,
+      alpha: 0.15 + Math.random() * 0.3,
+      char: Math.random() > 0.5 ? '❤' : '♡'
+    });
+  }
+
+  function drawHearts() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hearts.forEach((h, i) => {
+      h.y -= h.speed;
+      h.x += h.drift;
+      ctx.globalAlpha = h.alpha;
+      ctx.font = `${h.size}px serif`;
+      ctx.fillStyle = '#e8536a';
+      ctx.fillText(h.char, h.x, h.y);
+      if (h.y < -30) hearts.splice(i, 1);
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(drawHearts);
+  }
+
+  setInterval(spawnHeart, 500);
+  drawHearts();
+
+  /* ── Escaping "No" button ── */
+  const noBtn = document.getElementById('btn-no');
+  const btnGroup = document.getElementById('btn-group');
+
+  // Make the group relatively positioned so we can place No button absolutely within the area
+  btnGroup.style.position = 'relative';
+  btnGroup.style.display  = 'inline-flex';
+
+  function moveNoBtn() {
+    const gRect = btnGroup.getBoundingClientRect();
+    const maxX  = gRect.width  - noBtn.offsetWidth;
+    const maxY  = 80; // keep it near the button group vertically
+
+    const randX = Math.random() * maxX;
+    const randY = (Math.random() - 0.5) * maxY;
+
+    noBtn.style.position  = 'fixed';
+    noBtn.style.left      = (gRect.left + randX) + 'px';
+    noBtn.style.top       = (gRect.top  + randY) + 'px';
+    noBtn.style.transition = 'left 0.18s ease, top 0.18s ease';
+  }
+
+  // Position the No button initially relative to the group
+  window.addEventListener('load', () => {
+    const gRect = btnGroup.getBoundingClientRect();
+    noBtn.style.position = 'fixed';
+    noBtn.style.left     = (gRect.right + 20) + 'px';
+    noBtn.style.top      = gRect.top + 'px';
+  });
+
+  noBtn.addEventListener('mouseover', moveNoBtn);
+  noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNoBtn(); }, { passive: false });
+
+  /* ── Switch to happy page ── */
+  function goHappy() {
+    document.getElementById('sorry-page').classList.remove('active');
+    document.getElementById('happy-page').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    burstConfetti();
+  }
+
+  /* ── Confetti burst on happy page ── */
+  function burstConfetti() {
+    for (let i = 0; i < 40; i++) {
+      setTimeout(spawnHeart, i * 60);
+    }
+  }
+</script>
+</body>
+</html>
